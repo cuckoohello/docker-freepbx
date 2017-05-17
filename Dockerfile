@@ -137,7 +137,7 @@ RUN curl -sf -o asterisk-core-sounds-en-wav-current.tar.gz -L http://downloads.a
 
 # Add Asterisk user
 RUN useradd -m $ASTERISKUSER \
-	&& chown $ASTERISKUSER. /var/run/asterisk \ 
+	&& chown $ASTERISKUSER. /var/run/asterisk \
 	&& chown -R $ASTERISKUSER. /etc/asterisk \
 	&& chown -R $ASTERISKUSER. /var/lib/asterisk \
 	&& chown -R $ASTERISKUSER. /var/log/asterisk \
@@ -178,6 +178,8 @@ RUN chown asterisk:asterisk /etc/asterisk/cdr_adaptive_odbc.conf \
 # Enable Rewrite Module
 RUN a2enmod rewrite
 
+RUN apt-get update && apt-get install -y net-tools && apt-get clean
+
 #RUN pear install Console_Getopt
 # Download and install FreePBX
 WORKDIR /usr/src
@@ -193,7 +195,6 @@ RUN curl -sf -o freepbx.tgz -L http://mirror.freepbx.org/modules/packages/freepb
 	&& sed -i "s/'0000-00-00 00:00:00'/CURRENT_TIMESTAMP/" installlib/SQL/cdr.sql \
 	&& ./install -n \
 	&& fwconsole restart \
-	&& rm -r /usr/src/freepbx \
-  && fwconsole ma installall
+	&& rm -r /usr/src/freepbx
 
 WORKDIR /
